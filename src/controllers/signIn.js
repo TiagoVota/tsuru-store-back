@@ -1,6 +1,6 @@
 const login = async (req, res) => {
-
+  console.log('object');
 };
 
 
-export default { login };
+export { login };

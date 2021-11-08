@@ -11,7 +11,7 @@ app.use(cors());
 app.use(express.json());
 
 
-app.post('/sign-up', login);
+app.post('/', login);
 app.post('/sign-up', register);
 
 

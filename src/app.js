@@ -4,6 +4,8 @@ import express from 'express';
 import { auth } from './middlewares/auth.js';
 import { login } from './controllers/signIn.js';
 import { register } from './controllers/signUp.js';
+import { productsList } from './controllers/products.js';
+import { categoriesList } from './controllers/categories.js';
 
 const app = express();
 
@@ -14,5 +16,7 @@ app.use(express.json());
 app.post('/sign-up', login);
 app.post('/sign-up', register);
 
+app.get('/products', productsList);
+app.get('/categories', categoriesList);
 
 export default app;

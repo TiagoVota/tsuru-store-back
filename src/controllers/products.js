@@ -1,7 +1,8 @@
 import connection from '../database/database.js';
 
 const productsList = async (req, res) => {
-  const result = await connection.query(`
+  try {
+    const result = await connection.query(`
     SELECT
       id,
       name,
@@ -11,7 +12,10 @@ const productsList = async (req, res) => {
     FROM products;
   `);
 
-  res.send(result.rows);
+    res.send(result.rows);
+  } catch {
+    res.sendStatus(404);
+  }
 };
 
 export { productsList };

@@ -6,6 +6,7 @@ import { login } from './controllers/signIn.js';
 import { register } from './controllers/signUp.js';
 import { productsList } from './controllers/products.js';
 import { categoriesList } from './controllers/categories.js';
+import { getSingleProduct } from './controllers/singleProduct.js';
 
 const app = express();
 
@@ -18,5 +19,6 @@ app.post('/sign-up', register);
 
 app.get('/products', productsList);
 app.get('/categories', categoriesList);
+app.get('/single-product/:id', getSingleProduct);
 
 export default app;

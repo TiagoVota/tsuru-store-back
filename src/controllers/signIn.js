@@ -20,10 +20,9 @@ const login = async (req, res) => {
     `, [email]);
     const user = userPromise.rows[0];
 
-
-    const isValidPassword = bcrypt.compareSync(password, user?.password);
-
-    if (!user || !isValidPassword) return res.status(401).send('E-mail ou senha inválido!');
+    if (!user || !bcrypt.compareSync(password, user.password)) {
+      return res.status(401).send('E-mail ou senha inválido!');
+    }
 
     const { id, name } = user;
 

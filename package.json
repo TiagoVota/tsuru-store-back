@@ -5,10 +5,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon ./src/server.js",
+    "start": "npx nodemon ./src/server.js",
     "start:prod": "NODE_ENV=prod node ./src/server.js",
     "start:test": "node ./src/server.js",
-    "start:dev": "NODE_ENV=prod nodemon ./src/server.js",
+    "start:dev": "NODE_ENV=prod npx nodemon ./src/server.js",
     "test": "npx jest",
     "test:watch": "npx jest --watch"
   },

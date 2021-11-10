@@ -1,6 +1,5 @@
 import pg from 'pg';
 
-
 const { Pool } = pg;
 
 const {
@@ -18,6 +17,5 @@ const connection = new Pool ({
   host: DB_HOST,
   database: DB_NAME
 });
-
 
 export default connection;

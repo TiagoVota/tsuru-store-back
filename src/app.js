@@ -13,12 +13,11 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-
 app.post('/', login);
 app.post('/sign-up', register);
 
-app.get('/products', productsList);
-app.get('/categories', categoriesList);
-app.get('/single-product/:id', getSingleProduct);
+app.get('/products', auth, productsList);
+app.get('/categories', auth, categoriesList);
+app.get('/single-product/:id', auth, getSingleProduct);
 
 export default app;

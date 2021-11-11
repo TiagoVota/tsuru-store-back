@@ -5,7 +5,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "npx nodemon ./src/server.js",
+    "start": "node ./src/server.js",
+    "start:watch": "npx nodemon ./src/server.js",
     "start:prod": "NODE_ENV=prod node ./src/server.js",
     "start:test": "node ./src/server.js",
     "start:dev": "NODE_ENV=prod npx nodemon ./src/server.js",

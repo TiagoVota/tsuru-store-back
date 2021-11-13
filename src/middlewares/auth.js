@@ -3,19 +3,22 @@ import connection from '../database/database.js';
 
 const auth = async (req, res, next) => {
   const { authorization } = req.headers;
-  const token = authorization?.split('Bearer ')[1];
+  const token = authorization?.replace('Bearer ', '');
 
   try {
-    const sessions = await connection.query(`
+    const userSessionPromise = await connection.query(`
       SELECT * FROM sessions
         WHERE token = $1;
     `, [token]);
+    const userSession = userSessionPromise.rows[0];
 
-    if (sessions.rowCount === 0) return res.sendStatus(401);
+    if (!userSession) return res.sendStatus(401);
+
+    req.userId = userSession.user_id;
 
   } catch (error) {
     console.log(error);
-    res.sendStatus(500);
+    return res.sendStatus(500);
   }
 
   next();

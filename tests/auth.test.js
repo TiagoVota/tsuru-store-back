@@ -5,19 +5,15 @@ import faker from 'faker';
 import '../src/setup.js';
 import app from '../src/app.js';
 import connection from '../src/database/database.js';
-import { cleanTableDatabase } from '../src/factories/deleteFactory.js';
+import { clearAllTables } from '../src/factories/deleteFactory.js';
 import { fakerCpf } from '../src/factories/fakerCpfFactory.js';
 
 
-beforeAll(async () => {
-  await cleanTableDatabase('sessions');
-  await cleanTableDatabase('users');
-});
+beforeAll(clearAllTables);
 
 afterAll(async () => {
-  await cleanTableDatabase('sessions');
-  await cleanTableDatabase('users');
-  connection.end();
+  await clearAllTables();
+  await connection.end();
 });
 
 

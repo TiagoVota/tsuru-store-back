@@ -103,7 +103,7 @@ const registerTest = async (body, status) => {
 
 const loginTest = async (body, status) => {
   const result = await supertest(app)
-    .post('/')
+    .post('/sign-in')
     .send(body);
 
   expect(result.status).toEqual(status);

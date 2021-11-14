@@ -1,4 +1,6 @@
 import connection from '../database/database.js';
+import { theValidationProceeded } from '../validations/handleValidation.js';
+import validateQuantity from '../validations/product.js';
 
 
 const getProduct = async (req, res) => {
@@ -21,7 +23,17 @@ const getProduct = async (req, res) => {
 
 const addCartProduct = async (req, res) => {
   const { productId } = req.params;
+  const { quantity } = req.body;
   const userId = req.userId;
+
+  const isValidQuantity = theValidationProceeded({
+    res,
+    status: 400,
+    objectToValid: {quantity},
+    objectValidation: validateQuantity
+  });
+
+  if (!isValidQuantity) return;
 
   try {
     const cartId = await getCartId(userId);

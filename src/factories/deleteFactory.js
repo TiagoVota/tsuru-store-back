@@ -1,12 +1,6 @@
 import connection from '../database/database';
 
 
-// TODO: Acho que esta função aqui é código legado, pode ser substituida pela nova
-const clearTableDatabase = async (tableName) => {
-  await connection.query(`DELETE FROM ${tableName};`);
-};
-
-
 const clearAllTables = async () => {
   const tables = [
     'sessions',
@@ -28,6 +22,5 @@ const clearAllTables = async () => {
 
 
 export {
-  clearTableDatabase,
   clearAllTables,
 };

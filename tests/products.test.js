@@ -1,35 +1,32 @@
 /* eslint-disable no-undef */
 import supertest from 'supertest';
-
-import '../src/setup.js';
-import setup from '../src/factories/userFactory.js';
-import app from '../src/app.js';
-import connection from '../src/database/database.js';
-import { cleanTableDatabase } from '../src/factories/deleteFactory.js';
 import { v4 as uuid } from 'uuid';
 
+import '../src/setup.js';
+import app from '../src/app.js';
+import connection from '../src/database/database.js';
+import { userFactory } from '../src/factories/userFactory.js';
+import { clearAllTables } from '../src/factories/deleteFactory.js';
+
+
+const [token, invalidToken] = [uuid(), uuid()];
 
 beforeAll(async () => {
-  await cleanTableDatabase('sessions');
-  await cleanTableDatabase('users');
+  await clearAllTables();
+  await userFactory(token);
 });
 
 afterAll(async () => {
-  await cleanTableDatabase('sessions');
-  await cleanTableDatabase('users');
-  connection.end();
+  await clearAllTables();
+  await connection.end();
 });
 
 describe('GET /products', () => {
   test('return 401 to invalid token', async () => {
-    const token = uuid();
-    await setup(token);
-    await getProducts('', 401);
+    await getProducts(invalidToken, 401);
   });
 
   test('return 200 to valid token', async () => {
-    const token = uuid();
-    await setup(token);
     await getProducts(token, 200);
   });
 });

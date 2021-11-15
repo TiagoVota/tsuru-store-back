@@ -1,75 +1,96 @@
 import connection from '../database/database.js';
 import dayjs from 'dayjs';
 
-const checkCartEmpty = async (user_id, res) => {
-  try {
-    const isThereCartOpen = await connection.query(`
-      SELECT
-        id
-      FROM
-        carts
-      WHERE
-        user_id = $1 AND close_date is null;
-    `, [user_id]);
-
-    if (isThereCartOpen.rowCount === 0) {
-      res.sendStatus(404);
-      return (false);
-    }
-
-    const isThereItensInCart = await connection.query(`
-        SELECT
-          *
-        FROM 
-          carts_products
-        WHERE
-          cart_id = $1
-    ;`, [isThereCartOpen.rows[0].id]);
-
-    if (isThereItensInCart.rowCount === 0) {
-      res.sendStatus(404);
-      return (false);
-    }
-
-    return (true);
-  } catch (error) {
-    res.sendStatus(500);
-    console.log(error);
-    return (false);
-  }
-};
-
 const checkout = async (req, res) => {
   try {
-    let promisse = await connection.query(`
-      SELECT 
+    const userId = await connection.query(`
+      SELECT
         users.id
       FROM
         users
       JOIN
         sessions
       ON
-        sessions.user_id = users.id
+        users.id = sessions.user_id
       WHERE
-        sessions.token = $1
-    ;`, [req.body.token]);
+        token = $1;
+    `, [req.body.token]);
 
-    const user_id = promisse.rows[0].id;
+    const cartId = await connection.query(`
+      SELECT
+        id
+      FROM
+        carts
+      WHERE
+        user_id = $1;
+    `, [userId.rows[0].id]);
 
-    const isCartEmpty = await checkCartEmpty(user_id, res);
+    if (cartId.rowCount !== 0) {
+      const productsInCart = await connection.query(`
+        SELECT
+          product_id, quantity
+        FROM 
+          carts_products
+        WHERE
+          cart_id = $1;
+      `, [cartId.rows[0].id]);
 
-    if (isCartEmpty) {
-      await connection.query(`
-        UPDATE carts 
-        SET close_date = $1
-        WHERE user_id = $2 AND close_date is null;
-      `, [dayjs().format('DD/MM/YY'), user_id]);
+      if (productsInCart.rowCount !== 0) {
+        await connection.query(`
+          INSERT INTO
+            sales (user_id, time)
+          VALUES 
+            ($1, $2);
+        `, [userId.rows[0].id, dayjs().format('DD/MM/YY')]);
 
-      res.sendStatus(200);
+        const sales_id = await connection.query(`
+          SELECT
+            id
+          FROM
+            sales
+          WHERE
+            user_id = $1
+          ORDER BY
+            id DESC
+          LIMIT 1;
+        `, [userId.rows[0].id]);
+
+        productsInCart.rows.forEach(async (product) => {
+          await connection.query(`
+            INSERT INTO
+              sales_products (sale_id, product_id, quantity)
+            VALUES
+              ($1, $2, $3);
+          `, [sales_id.rows[0].id, product.product_id, product.quantity]);
+        });
+
+        await connection.query(`
+          DELETE FROM
+            carts_productS
+          WHERE
+            cart_id = $1;
+        `, [cartId.rows[0].id]);
+
+        await connection.query(`
+          DELETE FROM
+            carts
+          WHERE
+            user_id = $1;
+        `, [userId.rows[0].id]);
+
+        res.sendStatus(200);
+        return;
+      }
+      res.sendStatus(404);
+      return;
     }
+    res.sendStatus(404);
+    return;
+
   } catch (error) {
     console.log(error);
     res.sendStatus(500);
+    return;
   }
 };
 

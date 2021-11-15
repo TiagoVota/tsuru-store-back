@@ -1,4 +1,4 @@
-import connection from '../database/database';
+import connection from '../database/database.js';
 
 
 const clearAllTables = async () => {

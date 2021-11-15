@@ -8,6 +8,8 @@ import { productsList } from './controllers/products.js';
 import { categoriesList } from './controllers/categories.js';
 import { checkout } from './controllers/checkout.js';
 import { getProduct, addCartProduct } from './controllers/product.js';
+import { getHistory } from './controllers/history.js';
+import { getSale } from './controllers/sale.js';
 
 const app = express();
 
@@ -18,11 +20,14 @@ app.use(express.json());
 app.post('/sign-in', login);
 app.post('/sign-up', register);
 app.post('/checkout', checkout);
+app.post('/single-product/:productId', auth, addCartProduct);
+app.post('/get-history', auth, getHistory);
+app.post('/get-sale', auth, getSale);
+
 
 app.get('/products', auth, productsList);
 app.get('/categories', auth, categoriesList);
 app.get('/single-product/:productId', auth, getProduct);
-app.post('/single-product/:productId', auth, addCartProduct);
 
 
 export default app;

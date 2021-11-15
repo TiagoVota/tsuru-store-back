@@ -70,7 +70,7 @@ CREATE TABLE "sales_products" (
 
 CREATE TABLE "carts" (
 	"id" serial NOT NULL,
-	"user_id" integer NOT NULL,
+	"user_id" integer NOT NULL UNIQUE,
 	CONSTRAINT "carts_pk" PRIMARY KEY ("id")
 ) WITH (
   OIDS=FALSE

@@ -10,6 +10,8 @@ import connection from '../src/database/database.js';
 import { v4 as uuid } from 'uuid';
 
 beforeAll(async () => {
+  await cleanTableDatabase('sales_products');
+  await cleanTableDatabase('sales');
   await cleanTableDatabase('carts_products');
   await cleanTableDatabase('carts');
   await cleanTableDatabase('sessions');
@@ -28,17 +30,10 @@ describe('/POST checkout', () => {
     await closeCart({token}, 404);
   });
 
-  test('return 404 to closed cart', async () => {
+  test('return 200 to not empty cart', async () => {
     const token = uuid();
     await setup(token);
-    await populateCart(token, 'Closed');
-    await closeCart({token}, 404);
-  });
-
-  test('return 200 to open cart with itens', async () => {
-    const token = uuid();
-    await setup(token);
-    await populateCart(token, 'Correct');
+    await populateCart(token, 'correct');
     await closeCart({token}, 200);
   });
 });

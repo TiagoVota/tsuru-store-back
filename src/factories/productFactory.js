@@ -1,6 +1,6 @@
 import faker from 'faker';
 
-import connection from '../database/database';
+import connection from '../database/database.js';
 
 
 faker.locale = 'pt_BR';

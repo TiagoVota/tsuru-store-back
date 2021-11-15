@@ -1,18 +1,20 @@
 /* eslint-disable no-undef */
 import supertest from 'supertest';
 import { v4 as uuid } from 'uuid';
+import faker from 'faker';
 
 import '../src/setup.js';
 import app from '../src/app.js';
 import connection from '../src/database/database.js';
-import { userFactory } from '../src/factories/userFactory.js';
 import { clearAllTables } from '../src/factories/deleteFactory.js';
+import { userFactory } from '../src/factories/userFactory.js';
 import { createCategory } from '../src/factories/categoryFactory.js';
 import { createProduct } from '../src/factories/productFactory.js';
 
 
+const token = uuid();
 let productId = 0;
-const [token, otherToken] = [uuid(), uuid()];
+const quantity = faker.datatype.number({min: 0});
 
 beforeAll(async () => {
   await clearAllTables();
@@ -31,25 +33,22 @@ afterAll(async () => {
   await connection.end();
 });
 
-describe('GET /single-product', () => {
-  test('return 401 to invalid token', async () => {
-    await getSingleProduct(otherToken, 401, productId);
+describe('POST /single-product', () => {
+  test('return 400 for invalid quantity', async () => {
+    const invalidQuantity = '';
+    await postProduct(token, 400, productId, invalidQuantity);
   });
 
-  test('return 404 to invalid id', async () => {
-    const incorrectProductId = 'test';
-    await getSingleProduct(token, 404, incorrectProductId);
-  });
-
-  test('return 200 to valid token', async () => {
-    await getSingleProduct(token, 200, productId);
+  test('return 200 for product insert success in cart', async () => {
+    await postProduct(token, 200, productId, quantity);
   });
 });
 
-const getSingleProduct = async (token, status, productId) => {
+const postProduct = async (token, status, productId, quantity) => {
   const result = await supertest(app)
-    .get(`/single-product/${productId}`)
-    .set('authorization', `Bearer ${token}`);
+    .post(`/single-product/${productId}`)
+    .set('authorization', `Bearer ${token}`)
+    .send({quantity});
 
   expect(result.status).toEqual(status);
 };

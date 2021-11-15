@@ -5,19 +5,16 @@ import faker from 'faker';
 import '../src/setup.js';
 import app from '../src/app.js';
 import connection from '../src/database/database.js';
-import { cleanTableDatabase } from '../src/factories/deleteFactory.js';
+import { clearAllTables } from '../src/factories/deleteFactory.js';
 import { fakerCpf } from '../src/factories/fakerCpfFactory.js';
 
 
-beforeAll(async () => {
-  await cleanTableDatabase('sessions');
-  await cleanTableDatabase('users');
-});
+// TODO: Tiago - Mudar esses testes, eles estão correlacionados, o que não é bacana!
+beforeAll(clearAllTables);
 
 afterAll(async () => {
-  await cleanTableDatabase('sessions');
-  await cleanTableDatabase('users');
-  connection.end();
+  await clearAllTables();
+  await connection.end();
 });
 
 
@@ -107,7 +104,7 @@ const registerTest = async (body, status) => {
 
 const loginTest = async (body, status) => {
   const result = await supertest(app)
-    .post('/')
+    .post('/sign-in')
     .send(body);
 
   expect(result.status).toEqual(status);

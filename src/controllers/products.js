@@ -12,9 +12,15 @@ const productsList = async (req, res) => {
     FROM products;
   `);
 
-    res.send(result.rows);
-  } catch {
-    res.sendStatus(404);
+    return res.send(result.rows);
+
+  } catch (error) {
+    // TODO: Aqui está caindo todos os erros que podem acontecer com as requisições do front
+    // seria bacana ter um tratamento no try se um produto não existe no 404, e o catch ser mais
+    // destinado somente a erros na requisição do database, daí você deixa um erro 500.
+    // Dá uma olhada no que eu fiz para veres se curte a ideia :3
+    console.log(error);
+    return res.sendStatus(404);
   }
 };
 

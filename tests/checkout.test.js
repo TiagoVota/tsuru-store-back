@@ -2,20 +2,18 @@
 import supertest from 'supertest';
 
 import '../src/setup.js';
-import setup from '../src/factories/userFactory.js';
-import populateCart from '../src/factories/populateCart.js';
-import { cleanTableDatabase } from '../src/factories/deleteFactory';
 import app from '../src/app.js';
 import connection from '../src/database/database.js';
+import { clearAllTables } from '../src/factories/deleteFactory.js';
+import { userFactory } from '../src/factories/userFactory.js';
+import { createCart } from '../src/factories/cartFactory.js';
 import { v4 as uuid } from 'uuid';
+import { createCategory } from '../src/factories/categoryFactory.js';
+import { createProduct } from '../src/factories/productFactory.js';
+import { createProductsInCart } from '../src/factories/cartProductsFactory.js';
 
 beforeAll(async () => {
-  await cleanTableDatabase('sales_products');
-  await cleanTableDatabase('sales');
-  await cleanTableDatabase('carts_products');
-  await cleanTableDatabase('carts');
-  await cleanTableDatabase('sessions');
-  await cleanTableDatabase('users');
+  await clearAllTables();
 });
 
 afterAll(async () => {
@@ -25,15 +23,19 @@ afterAll(async () => {
 describe('/POST checkout', () => {
   test('return 404 to empty cart', async () => {
     const token = uuid();
-    await setup(token);
-    await populateCart(token, 'Empty');
+    await userFactory(token);
+    await createCategory('teste 1');
     await closeCart({token}, 404);
   });
 
   test('return 200 to not empty cart', async () => {
     const token = uuid();
-    await setup(token);
-    await populateCart(token, 'correct');
+    const userInfo = await userFactory(token);
+    const category = await createCategory();
+    const categoryId = category.id;
+    const product = await createProduct({categoryId});
+    const cart = await createCart(userInfo.user.id);
+    await createProductsInCart(product.id, cart.id);
     await closeCart({token}, 200);
   });
 });

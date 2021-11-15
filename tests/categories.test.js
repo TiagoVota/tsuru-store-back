@@ -1,35 +1,34 @@
 /* eslint-disable no-undef */
 import supertest from 'supertest';
-
-import '../src/setup.js';
-import setup from '../src/factories/userFactory.js';
-import app from '../src/app.js';
-import connection from '../src/database/database.js';
-import { cleanTableDatabase } from '../src/factories/deleteFactory.js';
 import { v4 as uuid } from 'uuid';
 
+import '../src/setup.js';
+import app from '../src/app.js';
+import connection from '../src/database/database.js';
+import { clearAllTables } from '../src/factories/deleteFactory.js';
+import { userFactory } from '../src/factories/userFactory.js';
+import { createCategory } from '../src/factories/categoryFactory.js';
+
+
+const [token, incorrectToken] = [uuid(), uuid()];
 
 beforeAll(async () => {
-  await cleanTableDatabase('sessions');
-  await cleanTableDatabase('users');
+  await clearAllTables();
+  await userFactory(token);
+  await createCategory();
 });
 
 afterAll(async () => {
-  await cleanTableDatabase('sessions');
-  await cleanTableDatabase('users');
-  connection.end();
+  await clearAllTables();
+  await connection.end();
 });
 
 describe('GET /categories', () => {
   test('return 401 to invalid token', async () => {
-    const token = uuid();
-    await setup(token);
-    await getCategories('', 401);
+    await getCategories(incorrectToken, 401);
   });
 
   test('return 200 to valid token', async () => {
-    const token = uuid();
-    await setup(token);
     await getCategories(token, 200);
   });
 });

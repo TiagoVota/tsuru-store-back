@@ -17,6 +17,7 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
+  await clearAllTables();
   connection.end();
 });
 

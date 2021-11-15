@@ -9,6 +9,8 @@ CREATE TABLE "users" (
   OIDS=FALSE
 );
 
+
+
 CREATE TABLE "sessions" (
 	"id" serial NOT NULL,
 	"user_id" integer NOT NULL UNIQUE,
@@ -18,6 +20,8 @@ CREATE TABLE "sessions" (
   OIDS=FALSE
 );
 
+
+
 CREATE TABLE "categories" (
 	"id" serial NOT NULL,
 	"type" varchar(60) NOT NULL UNIQUE,
@@ -25,6 +29,8 @@ CREATE TABLE "categories" (
 ) WITH (
   OIDS=FALSE
 );
+
+
 
 CREATE TABLE "products" (
 	"id" serial NOT NULL,
@@ -37,6 +43,8 @@ CREATE TABLE "products" (
   OIDS=FALSE
 );
 
+
+
 CREATE TABLE "sales" (
 	"id" serial NOT NULL,
 	"user_id" integer NOT NULL,
@@ -45,6 +53,8 @@ CREATE TABLE "sales" (
 ) WITH (
   OIDS=FALSE
 );
+
+
 
 CREATE TABLE "sales_products" (
 	"id" serial NOT NULL,
@@ -56,6 +66,8 @@ CREATE TABLE "sales_products" (
   OIDS=FALSE
 );
 
+
+
 CREATE TABLE "carts" (
 	"id" serial NOT NULL,
 	"user_id" integer NOT NULL UNIQUE,
@@ -64,16 +76,23 @@ CREATE TABLE "carts" (
   OIDS=FALSE
 );
 
+
+
 CREATE TABLE "carts_products" (
 	"id" serial NOT NULL,
 	"cart_id" integer NOT NULL,
 	"product_id" integer NOT NULL,
+	"quantity" integer NOT NULL DEFAULT '1',
 	CONSTRAINT "carts_products_pk" PRIMARY KEY ("id")
 ) WITH (
   OIDS=FALSE
 );
 
+
+
+
 ALTER TABLE "sessions" ADD CONSTRAINT "sessions_fk0" FOREIGN KEY ("user_id") REFERENCES "users"("id");
+
 
 ALTER TABLE "products" ADD CONSTRAINT "products_fk0" FOREIGN KEY ("category_id") REFERENCES "categories"("id");
 
@@ -86,3 +105,11 @@ ALTER TABLE "carts" ADD CONSTRAINT "carts_fk0" FOREIGN KEY ("user_id") REFERENCE
 
 ALTER TABLE "carts_products" ADD CONSTRAINT "carts_products_fk0" FOREIGN KEY ("cart_id") REFERENCES "carts"("id");
 ALTER TABLE "carts_products" ADD CONSTRAINT "carts_products_fk1" FOREIGN KEY ("product_id") REFERENCES "products"("id");
+
+
+
+
+
+
+
+

@@ -14,9 +14,12 @@ const getProduct = async (req, res) => {
       id = $1
   `, [req.params.productId]);
 
-    res.send(result.rows[0]);
-  } catch {
-    res.sendStatus(404);
+    return res.send(result.rows[0]);
+
+  } catch (error) {
+    // TODO: dá uma olhada no que escrevi em products
+    console.log(error);
+    return res.sendStatus(404);
   }
 };
 
@@ -38,9 +41,11 @@ const addCartProduct = async (req, res) => {
   try {
     const cartId = await getCartId(userId);
 
-    await insertProduct(cartId, productId);
+    const upsertInfo = {cartId, productId, quantity};
 
-    return res.status(200).send({cartId});
+    await upsertProduct(upsertInfo);
+
+    return res.status(200).send(upsertInfo);
     
   } catch (error) {
     console.log(error);
@@ -50,17 +55,17 @@ const addCartProduct = async (req, res) => {
 
 
 const getCartId = async (userId) => {
-  let cartId = await existentCartId(userId);
+  let cartId = await selectCartId(userId);
 
   if (!cartId) cartId = await createCart(userId);
 
   return cartId;
 };
 
-const existentCartId = async (userId) => {
+const selectCartId = async (userId) => {
   const userCartPromise = await connection.query(`
     SELECT * FROM carts
-      WHERE user_id = $1 AND close_date IS NULL;
+      WHERE user_id = $1;
   `, [userId]);
 
   return userCartPromise.rows[0]?.id;
@@ -74,16 +79,26 @@ const createCart = async (userId) => {
       ($1);
   `, [userId]);
 
-  return await existentCartId(userId);
+  return await selectCartId(userId);
 };
 
-const insertProduct = async (cartId, productId) => {
-  await connection.query(`
+const upsertProduct = async ({ cartId, productId, quantity }) => {
+  const queryCondition = 'WHERE cart_id = $1 AND product_id = $2';
+  const updateQuery = `
+    UPDATE carts_products
+      SET quantity = $3 ${queryCondition};
+  `;
+  const insertQuery = `
     INSERT INTO carts_products
-      (cart_id, product_id)
-    VALUES
-      ($1, $2);
-  `, [cartId, productId]);
+      (cart_id, product_id, quantity)
+    SELECT
+      $1, $2, $3
+      WHERE NOT EXISTS
+        (SELECT * FROM carts_products ${queryCondition});
+  `;
+
+  await connection.query(updateQuery, [cartId, productId, quantity]);
+  await connection.query(insertQuery, [cartId, productId, quantity]);
 };
 
 

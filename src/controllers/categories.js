@@ -9,9 +9,12 @@ const categoriesList = async (req, res) => {
     FROM categories;
   `);
 
-    res.send(result.rows);
-  } catch {
-    res.sendStatus(404);
+    return res.send(result.rows);
+
+  } catch (error) {
+    // TODO: Dá uma olhada no que escrevi de comentário do products.js
+    console.log(error);
+    return res.sendStatus(404);
   }
 };
 

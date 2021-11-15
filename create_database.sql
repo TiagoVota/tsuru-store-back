@@ -71,7 +71,6 @@ CREATE TABLE "sales_products" (
 CREATE TABLE "carts" (
 	"id" serial NOT NULL,
 	"user_id" integer NOT NULL,
-	"close_date" timestamp with time zone DEFAULT NULL,
 	CONSTRAINT "carts_pk" PRIMARY KEY ("id")
 ) WITH (
   OIDS=FALSE

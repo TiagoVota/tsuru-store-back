@@ -9,6 +9,7 @@ import { clearAllTables } from '../src/factories/deleteFactory.js';
 import { fakerCpf } from '../src/factories/fakerCpfFactory.js';
 
 
+// TODO: Tiago - Mudar esses testes, eles estão correlacionados, o que não é bacana!
 beforeAll(clearAllTables);
 
 afterAll(async () => {

@@ -7,6 +7,8 @@ const getCart = async (req, res) => {
   try {
     const cartId = await getCartId(userId);
 
+    if (!cartId) return res.status(200).send([]);
+
     const cartList = await selectCartProducts(cartId);
 
     return res.status(200).send(cartList);
@@ -23,7 +25,7 @@ const getCartId = async (userId) => {
       WHERE user_id = $1;
   `, [userId]);
 
-  return cartPromise.rows[0].id;
+  return cartPromise.rows[0]?.id;
 };
 
 const selectCartProducts = async (cartId) => {

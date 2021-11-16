@@ -26,7 +26,7 @@ describe('/POST checkout', () => {
     const token = uuid();
     await userFactory(token);
     await createCategory('teste 1');
-    await closeCart({token}, 404);
+    await closeCart(token, 404);
   });
 
   test('return 200 to not empty cart', async () => {
@@ -34,7 +34,7 @@ describe('/POST checkout', () => {
     const userInfo = await userFactory(token);
     const category = await createCategory();
     const categoryId = category.id;
-    const product = await createProduct({categoryId});
+    const product = await createProduct({ categoryId });
     const cart = await createCart(userInfo.user.id);
     await createProductsInCart(product.id, cart.id);
     await closeCart(token, 200);
@@ -44,7 +44,8 @@ describe('/POST checkout', () => {
 const closeCart = async (token, status) => {
   const result = await supertest(app)
     .post('/checkout')
-    .set('authorization', `Bearer ${token}`);
+    .set('authorization', `Bearer ${token}`)
+    .send({ token });
 
   expect(result.status).toEqual(status);
 };

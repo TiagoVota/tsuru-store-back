@@ -27,7 +27,7 @@ app.get('/single-product/:productId', auth, getProduct);
 app.post('/single-product/:productId', auth, addCartProduct);
 
 app.get('/cart', auth, getCart);
-app.post('/checkout', checkout);
+app.post('/checkout', auth, checkout);
 app.post('/get-history', auth, getHistory);
 app.post('/get-sale', auth, getSale);
 

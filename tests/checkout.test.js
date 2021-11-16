@@ -37,14 +37,14 @@ describe('/POST checkout', () => {
     const product = await createProduct({categoryId});
     const cart = await createCart(userInfo.user.id);
     await createProductsInCart(product.id, cart.id);
-    await closeCart({token}, 200);
+    await closeCart(token, 200);
   });
 });
 
-const closeCart = async (body, status) => {
+const closeCart = async (token, status) => {
   const result = await supertest(app)
     .post('/checkout')
-    .send(body);
+    .set('authorization', `Bearer ${token}`);
 
   expect(result.status).toEqual(status);
 };

@@ -6,7 +6,7 @@ const createProductsInCart = async (productId, cartId) => {
       carts_products (cart_id, product_id, quantity)
     VALUES
       ($1, $2, $3);
-  `, [cartId, productId, Math.cell(Math.ceil()*10)]);
+  `, [cartId, productId, Math.ceil(Math.random()*10)]);
 };
 
 export { createProductsInCart };

@@ -101,8 +101,29 @@ const upsertProduct = async ({ cartId, productId, quantity }) => {
   await connection.query(insertQuery, [cartId, productId, quantity]);
 };
 
+const deleteCartProduct = async (req, res) => {
+  const userId = req.userId;
+  const { productId } = req.params;
+
+  try {
+    const cartId = await selectCartId(userId);
+
+    await connection.query(`
+      DELETE FROM carts_products
+        WHERE cart_id = $1 AND product_id = $2;
+    `, [cartId, productId]);
+
+    return res.sendStatus(200);
+
+  } catch (error) {
+    console.log(error);
+    return res.sendStatus(500);
+  }
+};
+
 
 export {
   getProduct,
-  addCartProduct
+  addCartProduct,
+  deleteCartProduct,
 };

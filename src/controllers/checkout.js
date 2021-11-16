@@ -2,20 +2,10 @@ import connection from '../database/database.js';
 import dayjs from 'dayjs';
 
 const checkout = async (req, res) => {
-  try {
-    const userId = await connection.query(`
-      SELECT
-        users.id
-      FROM
-        users
-      JOIN
-        sessions
-      ON
-        users.id = sessions.user_id
-      WHERE
-        token = $1;
-    `, [req.body.token]);
+  const userId = req.userId;
+  console.log({userId});
 
+  try {
     const cartId = await connection.query(`
       SELECT
         id
@@ -23,7 +13,7 @@ const checkout = async (req, res) => {
         carts
       WHERE
         user_id = $1;
-    `, [userId.rows[0].id]);
+    `, [userId]);
     
     if (cartId.rowCount === 0) return res.sendStatus(404);
 
@@ -43,7 +33,7 @@ const checkout = async (req, res) => {
         sales (user_id, time)
       VALUES 
         ($1, $2);
-    `, [userId.rows[0].id, dayjs().format('DD/MM/YY')]);
+    `, [userId, dayjs().format('DD/MM/YY')]);
 
     const sales_id = await connection.query(`
       SELECT
@@ -55,7 +45,7 @@ const checkout = async (req, res) => {
       ORDER BY
         id DESC
       LIMIT 1;
-    `, [userId.rows[0].id]);
+    `, [userId]);
 
     productsInCart.rows.forEach(async (product) => {
       await connection.query(`
@@ -78,7 +68,7 @@ const checkout = async (req, res) => {
         carts
       WHERE
         user_id = $1;
-    `, [userId.rows[0].id]);
+    `, [userId]);
 
     return res.sendStatus(200);
 

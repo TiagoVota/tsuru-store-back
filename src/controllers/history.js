@@ -1,22 +1,9 @@
 import connection from '../database/database.js';
 
 const getHistory = async (req, res) => {
-  const token = req.body.authorization.replace('Bearer ', '');
+  const userId = req.userId;
 
   try {
-    const userId = await connection.query(`
-      SELECT
-        users.id
-      FROM
-        users
-      JOIN
-        sessions
-      ON
-        users.id = sessions.user_id
-      WHERE 
-        sessions.token = $1;
-    `, [token]);
-
     const sales = await connection.query(`
       SELECT
         *
@@ -24,15 +11,13 @@ const getHistory = async (req, res) => {
         sales
       WHERE
         user_id = $1
-    `, [userId.rows[0].id]);
+    `, [userId]);
 
-    if (sales.rowCount !== 0) {
-      res.send(sales.rows).status(200);
-      return;
-    }
+    if (sales.rowCount !== 0) return res.send(sales.rows).status(200);
 
-    res.sendStatus(404);
-    return;
+    
+    return res.sendStatus(404);
+
   } catch (error) {
     console.log(error);
     res.sendStatus(500);
